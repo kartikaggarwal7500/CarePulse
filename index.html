@@ -2,20 +2,34 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>CarePulse - Fast Guidance. Safer Decisions.</title>
     <meta name="description" content="Accessible Multimodal Health & Safety Companion providing fast structured first-aid guidance, hazard scanning, and emergency assistance." />
+    <meta name="keywords" content="health, first aid, safety, triage, campus emergency, hazard scanner, medical booking" />
+    <meta name="author" content="CarePulse Health & Safety System" />
+    
+    <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="CarePulse - Fast Guidance. Safer Decisions." />
     <meta property="og:description" content="Accessible Multimodal Health & Safety Companion providing fast structured first-aid guidance, hazard scanning, and emergency assistance." />
     <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#0ea5e9" />
+    <meta property="og:locale" content="en_US" />
+    
+    <!-- Security & Accessibility Headers -->
+    <meta name="theme-color" content="#0284c7" />
+    <meta name="color-scheme" content="light dark" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data: blob:; connect-src 'self' https: wss:; font-src 'self' https: data:;" />
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   </head>
   <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-cyan-500 selection:text-white min-h-screen">
-    <div id="root"></div>
+    <!-- Accessible Skip to Content Landmark -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2.5 focus:bg-cyan-600 focus:text-white focus:font-bold focus:rounded-lg focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-400">
+      Skip to main content
+    </a>
+    <div id="root" role="presentation"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

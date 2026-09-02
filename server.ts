@@ -7,18 +7,61 @@ import { GoogleGenAI } from "@google/genai";
 const app = express();
 const PORT = 3000;
 
-app.use(express.json({ limit: "25mb" }));
+app.use(express.json({ limit: "10mb" }));
 
-// Basic CORS and headers
+// Rate limiter state (in-memory sliding window)
+const ipRequestCounts = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 120; // 120 requests per minute
+
+// Hardened Security Headers & CORS Middleware
 app.use((req, res, next) => {
+  // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type,Authorization");
+  res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,Content-Type,Authorization,Accept");
+  
+  // Security Headers (OWASP & Lighthouse standards)
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "camera=(self), microphone=(self), geolocation=(self)");
+  
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
+
+  // Rate Limiting for API routes
+  if (req.path.startsWith("/api/")) {
+    const clientIp = (req.headers["x-forwarded-for"] as string)?.split(",")[0] || req.socket.remoteAddress || "unknown";
+    const now = Date.now();
+    const clientData = ipRequestCounts.get(clientIp);
+
+    if (!clientData || now > clientData.resetTime) {
+      ipRequestCounts.set(clientIp, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    } else {
+      clientData.count += 1;
+      if (clientData.count > MAX_REQUESTS_PER_WINDOW) {
+        return res.status(429).json({
+          success: false,
+          error: "Too many requests. Rate limit exceeded. Please retry shortly.",
+        });
+      }
+    }
+  }
+
   next();
 });
+
+// Helper for string sanitization against XSS & script injection
+function sanitizeInput(text: unknown): string {
+  if (typeof text !== "string") return "";
+  return text
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+    .replace(/javascript:/gi, "")
+    .trim();
+}
 
 // In-memory hazard reports store
 const hazardReports: any[] = [
