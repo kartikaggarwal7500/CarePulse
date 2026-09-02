@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Public readable config / app meta
+    match /system/{docId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Master Admin slot metadata & account record
+    match /admin_accounts/{adminId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Clinic Bookings: Anyone can create bookings or read their bookings/view list, admins can update/delete
+    match /clinic_bookings/{bookingId} {
+      allow read, write: if true;
+    }
+
+    // SOS Dispatch Records: Emergency broadcast and coordination
+    match /sos_dispatches/{dispatchId} {
+      allow read, write: if true;
+    }
+
+    // Campus Hazard Reports: Reported hazards and feed
+    match /hazard_reports/{reportId} {
+      allow read, write: if true;
+    }
+
+    // Campus Advisories: Active weather/safety bulletins
+    match /campus_advisories/{advisoryId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // User Profiles
+    match /user_profiles/{userId} {
+      allow read, write: if true;
+    }
+
+    // Fallback rule for collections
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

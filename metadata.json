@@ -1,0 +1,12 @@
+{
+  "name": "CarePulse",
+  "description": "Accessible Multimodal Health & Safety Companion providing fast structured first-aid guidance, hazard scanning, and emergency assistance.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
